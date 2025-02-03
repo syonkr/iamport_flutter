@@ -28,6 +28,9 @@ class IamportWebViewWeb extends StatefulWidget {
 
   /// PG 별 추가 동작을 위한 콜백 (옵션)
   final Function? customPGAction;
+  final Function isPaymentOver;
+
+  final String? redirectUrl;
 
   IamportWebViewWeb({
     Key? key,
@@ -36,6 +39,8 @@ class IamportWebViewWeb extends StatefulWidget {
     required this.userCode,
     required this.paymentData,
     required this.useQueryData,
+    required this.isPaymentOver,
+    this.redirectUrl,
     this.customPGAction,
   }) : super(key: key);
 
@@ -70,13 +75,14 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
     _messageSub = html.window.onMessage.listen((html.MessageEvent event) {
       if (event.data != null && event.data is Map) {
         final Map data = event.data;
-        if (data['type'] == 'paymentResult') {
-          // 결제 결과 수신 시 useQueryData 콜백 호출
-          widget.useQueryData(Map<String, String>.from(data['data']));
-        } else if (data['type'] == 'customPGAction') {
+        if (data['type'] == 'customPGAction') {
           // customPGAction 이벤트 수신 (예: 특수 PG 처리)
           if (widget.customPGAction != null) {
             widget.customPGAction!(data['data']);
+          }
+        } else if (data['type'] == 'urlChange') {
+          if (widget.isPaymentOver(data['url'])) {
+            widget.useQueryData(Map<String, String>.from(data['url']));
           }
         }
       }
@@ -106,10 +112,23 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
           function initiatePayment() {
             IMP.init("${widget.userCode}");
             IMP.request_pay($paymentDataJson, function(response) {
-              // 결제 완료 후 결괏값을 부모 창(Flutter)으로 전달
-              window.parent.postMessage({type: 'paymentResult', data: response}, "*");
+              const query = [];
+              Object.keys(response).forEach(function(key) {
+                query.push(key + "=" + response[key]);
+              });
+              location.href = "${widget.redirectUrl}" + "?" + query.join("&");
             });
           }
+
+          // URL 변경(리다이렉트) 감지를 위한 예시: hashchange 이벤트 또는 setInterval 방식
+          function checkUrlChange() {
+            var currentUrl = window.location.href;
+            window.parent.postMessage({type: 'urlChange', url: currentUrl}, "*");
+          }
+
+          // hashchange 이벤트를 활용하는 방법 (또는 팝업, 히스토리 API 등 상황에 맞게 수정)
+          window.addEventListener('hashchange', checkUrlChange, false);
+
           window.onload = initiatePayment;
         </script>
       </head>

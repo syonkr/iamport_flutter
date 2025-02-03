@@ -54,11 +54,35 @@ class IamportPayment extends StatelessWidget {
           initialChild: this.initialChild,
           userCode: this.userCode,
           paymentData: this.data.toJson(),
+          redirectUrl: redirectUrl,
           useQueryData: (Map<String, String> data) {
             this.callback(data);
           },
           customPGAction: (data) {
             return null;
+          },
+          isPaymentOver: (String url) {
+            if (url.startsWith(redirectUrl)) {
+              return true;
+            }
+
+            if (this.data.payMethod == 'trans') {
+              /* [IOS] imp_uid와 merchant_uid값만 전달되기 때문에 결제 성공 또는 실패 구분할 수 없음 */
+              String decodedUrl = Uri.decodeComponent(url);
+              Uri parsedUrl = Uri.parse(decodedUrl);
+              String scheme = parsedUrl.scheme;
+              if (this.data.pg == 'html5_inicis') {
+                Map<String, String> query = parsedUrl.queryParameters;
+                if (query['m_redirect_url'] != null &&
+                    scheme == this.data.appScheme.toLowerCase()) {
+                  if (query['m_redirect_url']!.contains(redirectUrl)) {
+                    return true;
+                  }
+                }
+              }
+            }
+
+            return false;
           },
         );
       }
