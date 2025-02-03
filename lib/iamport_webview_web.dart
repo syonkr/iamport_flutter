@@ -126,12 +126,6 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
             window.parent.postMessage({type: 'urlChange', url: currentUrl}, "*");
           }
 
-          // hashchange 이벤트를 활용하는 방법 (또는 팝업, 히스토리 API 등 상황에 맞게 수정)
-          window.addEventListener('hashchange', checkUrlChange, false);
-
-          // 또는 setInterval로 주기적으로 확인할 수도 있음.
-          setInterval(checkUrlChange, 500);
-
           window.onload = initiatePayment;
         </script>
       </head>
