@@ -16,6 +16,8 @@ import 'package:portone_flutter/widget/iamport_webview.dart';
 import 'package:iamport_webview_flutter/iamport_webview_flutter.dart';
 import 'package:app_links/app_links.dart';
 
+import 'iamport_webview_web.dart';
+
 class IamportPayment extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget? initialChild;
@@ -46,7 +48,20 @@ class IamportPayment extends StatelessWidget {
           this.data.mRedirectUrl!.isNotEmpty) {
         redirectUrl = this.data.mRedirectUrl!;
       }
-
+      if (kIsWeb) {
+        return IamportWebViewWeb(
+          appBar: this.appBar,
+          initialChild: this.initialChild,
+          userCode: this.userCode,
+          paymentData: this.data.toJson(),
+          useQueryData: (Map<String, String> data) {
+            this.callback(data);
+          },
+          customPGAction: (data) {
+            return null;
+          },
+        );
+      }
       return IamportWebView(
         type: ActionType.payment,
         appBar: this.appBar,
