@@ -82,7 +82,8 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
           }
         } else if (data['type'] == 'urlChange') {
           if (widget.isPaymentOver(data['url'])) {
-            widget.useQueryData(Map<String, String>.from(data['url']));
+            String decodedUrl = Uri.decodeComponent(data['url']);
+            widget.useQueryData(Uri.parse(decodedUrl).queryParameters);
           }
         }
       }
