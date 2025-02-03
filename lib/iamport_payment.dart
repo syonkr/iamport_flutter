@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -65,7 +67,7 @@ class IamportPayment extends StatelessWidget {
         customPGAction: (WebViewController controller) {
           if (this.data.pg == 'smilepay') {
             // webview_flutter에서 iOS는 쿠키가 기본적으로 허용되어있는 것으로 추정
-            if (Platform.isAndroid) {
+            if (!kIsWeb && Platform.isAndroid) {
               controller.setAcceptThirdPartyCookies(true);
             }
           }

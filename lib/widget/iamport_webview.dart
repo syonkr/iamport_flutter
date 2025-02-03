@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +62,7 @@ class _IamportWebViewState extends State<IamportWebView> {
     super.initState();
     _isWebviewLoaded = 0;
     _isImpLoaded = 0;
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       WebView.platform = SurfaceAndroidWebView();
     }
     if (widget.initialChild != null) {

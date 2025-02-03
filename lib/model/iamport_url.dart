@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:portone_flutter/model/url_data.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -17,7 +19,7 @@ class IamportUrl {
         this.url.replaceFirst(RegExp(r'://'), ' ').split(' ');
     this.appScheme = splittedUrl[0];
 
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       /*
         Android scheme은 크게 3가지 형태
         1. intent://
@@ -70,7 +72,7 @@ class IamportUrl {
       scheme = this.appScheme;
     }
 
-    if (Platform.isAndroid && this.appScheme == 'https') {
+    if (!kIsWeb && Platform.isAndroid && this.appScheme == 'https') {
       if (this
           .url
           .startsWith('https://play.google.com/store/apps/details?id=')) {
@@ -86,6 +88,9 @@ class IamportUrl {
   }
 
   Future<String?> getMarketUrl() async {
+    if (kIsWeb) {
+      return this.url;
+    }
     if (Platform.isIOS) {
       switch (this.appScheme) {
         case 'kftc-bankpay': // 뱅크페이
