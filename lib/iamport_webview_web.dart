@@ -32,6 +32,8 @@ class IamportWebViewWeb extends StatefulWidget {
 
   final String? redirectUrl;
 
+  final bool isCertification;
+
   IamportWebViewWeb({
     Key? key,
     this.appBar,
@@ -41,6 +43,7 @@ class IamportWebViewWeb extends StatefulWidget {
     required this.useQueryData,
     required this.isPaymentOver,
     this.redirectUrl,
+    this.isCertification = false,
     this.customPGAction,
   }) : super(key: key);
 
@@ -113,7 +116,7 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
         <script type="text/javascript">
           function initiatePayment() {
             IMP.init("${widget.userCode}");
-            IMP.request_pay($paymentDataJson, function(response) {
+            IMP.${widget.isCertification ? 'certification' : 'request_pay'}($paymentDataJson, function(response) {
               const query = [];
               Object.keys(response).forEach(function(key) {
                 query.push(key + "=" + response[key]);

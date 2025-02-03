@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -11,6 +13,8 @@ import 'package:portone_flutter/model/url_data.dart';
 import 'package:portone_flutter/widget/iamport_error.dart';
 import 'package:portone_flutter/widget/iamport_webview.dart';
 import 'package:iamport_webview_flutter/iamport_webview_flutter.dart';
+
+import 'iamport_webview_web.dart';
 
 class IamportCertification extends StatelessWidget {
   final PreferredSizeWidget? appBar;
@@ -42,6 +46,25 @@ class IamportCertification extends StatelessWidget {
     IamportValidation validation =
         IamportValidation.fromCertificationData(userCode, data, callback);
     if (validation.getIsValid()) {
+      if (kIsWeb) {
+        return IamportWebViewWeb(
+          appBar: this.appBar,
+          initialChild: this.initialChild,
+          userCode: this.userCode,
+          paymentData: this.data.toJson(),
+          redirectUrl: redirectUrl,
+          isCertification: true,
+          useQueryData: (Map<String, String> data) {
+            this.callback(data);
+          },
+          customPGAction: (data) {
+            return null;
+          },
+          isPaymentOver: (String url) {
+            return url.startsWith(redirectUrl);
+          },
+        );
+      }
       return IamportWebView(
         type: ActionType.auth,
         appBar: this.appBar,
