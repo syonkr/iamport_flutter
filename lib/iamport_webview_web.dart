@@ -114,6 +114,15 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <script type="text/javascript" src="https://cdn.iamport.kr/v1/iamport.js"></script>
         <script type="text/javascript">
+        // window.open 오버라이드로 호출 정보를 로깅
+          (function() {
+            const originalWindowOpen = window.open;
+            window.open = function(url, target, features) {
+              console.log("window.open 호출됨:", url, target, features);
+              return originalWindowOpen(url, target, features);
+            };
+          })();
+          
           function initiatePayment() {
             IMP.init("${widget.userCode}");
             IMP.${widget.isCertification ? 'certification' : 'request_pay'}($paymentDataJson, function(response) {
