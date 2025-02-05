@@ -125,6 +125,7 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
         <script type="text/javascript" src="https://cdn.iamport.kr/v1/iamport.js"></script>
         <script type="text/javascript">
           function initiatePayment() {
+            changeTranMgr();
             IMP.init("${widget.userCode}");
             IMP.${widget.isCertification ? 'certification' : 'request_pay'}($paymentDataJson, function(response) {
               const query = [];
@@ -133,6 +134,17 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
               });
               window.parent.postMessage({type: 'urlChange', url: "${widget.redirectUrl}" + "?" + query.join("&")}, "*");
             });
+          }
+          
+          function changeTranMgr() {
+            clearTimeout(window.timer);
+            let mgr = document.getElementById("tranMgr");
+            if (mgr !== null) {
+              mgr.target = "_self";
+              mgr.submit();
+            } else {
+              window.timer = setTimeout(changeTranMgr, 10);
+            }
           }
 
           // URL 변경(리다이렉트) 감지를 위한 예시: hashchange 이벤트 또는 setInterval 방식

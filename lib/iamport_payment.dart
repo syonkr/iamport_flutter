@@ -44,6 +44,9 @@ class IamportPayment extends StatelessWidget {
 
     if (validation.getIsValid()) {
       var redirectUrl = UrlData.redirectUrl;
+      if (kIsWeb) {
+        redirectUrl = UrlData.redirectUrlForWeb;
+      }
       if (this.data.mRedirectUrl != null &&
           this.data.mRedirectUrl!.isNotEmpty) {
         redirectUrl = this.data.mRedirectUrl!;
