@@ -140,8 +140,8 @@ class _IamportWebViewWebState extends State<IamportWebViewWeb> {
             clearTimeout(window.timer);
             let mgr = document.getElementById("tranMgr");
             if (mgr !== null) {
-              mgr.target = "_self";
-              mgr.submit();
+              // mgr.target = "_self";
+              // mgr.submit();
             } else {
               window.timer = setTimeout(changeTranMgr, 10);
             }
